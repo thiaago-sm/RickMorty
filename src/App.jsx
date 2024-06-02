@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 
 function App() {
-  const [id, setId] = useState('');
+  const [id, setId] = useState('1');
   const [imagem, setImagem] = useState('');
   const [nome, setNome] = useState('');
   const [status, setStatus] = useState('');
@@ -11,37 +11,49 @@ function App() {
   const [origem, setOrigem] = useState('');
   const [localidade, setLocalidade] = useState('');
   const [criada, setCriada] = useState('');
-  const [episodio, setEpisodio] = useState();
+  const [episodio, setEpisodio] = useState([]);
 
   const buscarPersonagem = async () => {
-    const url = `https://rickandmortyapi.com/api/character/${id}`
-  
+    const url = `https://rickandmortyapi.com/api/character/${id}`;
+    
     const response = await fetch(url);
     const personagem = await response.json();
-    console.log(personagem);
   
-    setNome(personagem.name)
-    setImagem(personagem.image)
-    setStatus(personagem.status)
-    setEspecie(personagem.species)
-    setGenero(personagem.gender)
-    setOrigem(personagem.origin.name)
-    setLocalidade(personagem.location.name)
-    setCriada(personagem.created)
-    setEpisodio(personagem.episode)
+    setNome(personagem.name);
+    setImagem(personagem.image);
+    setStatus(personagem.status);
+    setEspecie(personagem.species);
+    setGenero(personagem.gender);
+    setOrigem(personagem.origin.name);
+    setLocalidade(personagem.location.name);
+    setCriada(personagem.created.substring(0, 10));
+    setEpisodio(personagem.episode.map(ep => ep.match(/(\d+)$/)[0]));
+  }
+
+  useEffect(() => {
+    buscarPersonagem();
+  }, []);
+
+  const ProximoId = () => {
+    setId((CharId) => CharId + 1);
   }
 
   return (
     <>
       <div className='text-zinc-900 w-full'>
         <div className='h-60 flex justify-center'>
-          <button>Voltar</button>
+          <button type='button'>Voltar</button>
             <img
               src={imagem}
               alt="personagem"
               className='w-60 h-full mx-4 rounded-full'
             />
-          <button>Avançar</button>
+          <button
+            type='button'
+            onClick={ProximoId}
+          >
+            Avançar
+          </button>
         </div>
 
         <div
@@ -54,7 +66,7 @@ function App() {
             <p className='border-b-2'><strong>Origem:</strong> {origem}</p>
             <p className='border-b-2'><strong>Localidade:</strong> {localidade}</p>
             <p className='border-b-2'><strong>Criada:</strong> {criada}</p>
-            <p className='border-b-2'><strong>Episodios:</strong> {episodio}</p>
+            <p className='border-b-2'><strong>Episodios:</strong> {episodio.join(', ')}</p>
 
           <form>
           <div>
